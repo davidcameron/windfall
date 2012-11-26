@@ -13,7 +13,7 @@ You need **posts** and **pages**, but also **products**, or **portfolio examples
 
 ### Content
 
-The basic unit in Windfall is a "card". A card represents both a content unit, and a template. Any card inherit any other card, pulling in the data fields, each defaulting to the value of the parent card.
+The basic unit in Windfall is a ``card``. A card represents both a content unit, and a template. Any card inherit any other card, pulling in the data fields, each defaulting to the value of the parent card.
 
 #### Example Post Inheritance
 
@@ -50,7 +50,7 @@ The basic unit in Windfall is a "card". A card represents both a content unit, a
 }
 </pre>
 
-"Post" inherits "card", which only gives it the 'name' and 'slug' fields by default. "Post" then defines its own fields, as well as populates content for them.
+Here ``post`` inherits ``card``, which only gives it the ``name`` and ``slug`` fields by default. ``Post`` then defines its own fields, as well as populates content for them.
 
 ##### Review
 <pre>
@@ -77,9 +77,9 @@ The basic unit in Windfall is a "card". A card represents both a content unit, a
 }
 </pre>
 
-"Review" gets a couple things by inheriting "post". It doesn't need to declare data types for inherited properties, and it doesn't even name the post author, as all (or most) reviews are written by the author declared in "post".
+``review`` gets a couple things by inheriting ``post``. It doesn't need to declare data types for inherited properties, and it doesn't even name the post author, as all (or most) reviews are written by the author declared in ``post``.
 
-Lets check out a real example; something you'd actually want to display on your site:
+Let's check out a real example, something you'd actually want to display on your site:
 
 ##### Example Review
 <pre>
@@ -102,6 +102,6 @@ All that inheritance gives this post a nice, simple structure, but still validat
 
 All the inheritance also gives us a default URL structure. Let's check it out.
 
-The URL for our iPhone 5 review: <code>/blog/review/iphone-5</code>
+The URL for our iPhone 5 review: ``/blog/review/iphone-5``
 
-The URL gets constructed by hopping up the inheritance chain, prepending the 'name' attribute of each parent unless a 'slug' is defined (this makes the URL root <code>/blog</code> instead of <code>/post</code>). You can actually have more than one post with the name "iphone-5", as long as they each have a unique direct parent. E.g. if you wanted a page that just listed all the iPhone 5 specs, it could inherit your 'spec-list' card and still have the 'iphone-5' name, getting <code>/spec-list/iphone-5</code> as the URL.
+The URL gets constructed by hopping up the inheritance chain, prepending the 'name' attribute of each parent unless a 'slug' is defined (this makes the URL root ``/blog`` instead of ``/post``). You can actually have more than one post with the name "iphone-5", as long as they each have a unique direct parent. E.g. if you wanted a page that just listed all the iPhone 5 specs, it could inherit your ``spec-list`` card and still have the ``iphone-5`` name, getting ``/spec-list/iphone-5`` as the URL.
