@@ -21,7 +21,7 @@ The basic unit in Windfall is a "card". A card represents both a content unit, a
 <pre>
 {
     'name':         'post',
-    'seoSlug':      'blog',
+    'slug':         'blog',
     'title':    {
         'dataType':     'text',
         'value':        'Hello World'
@@ -50,7 +50,7 @@ The basic unit in Windfall is a "card". A card represents both a content unit, a
 }
 </pre>
 
-"Post" inherits "card", which only gives it the "name" field by default. "Post" then defines its own fields, as well as populates content for them.
+"Post" inherits "card", which only gives it the 'name' and 'slug' fields by default. "Post" then defines its own fields, as well as populates content for them.
 
 ##### Review
 <pre>
