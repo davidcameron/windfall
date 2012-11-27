@@ -55,8 +55,8 @@ Here ``post`` inherits ``card``, which only gives it the ``name`` and ``slug`` f
 ##### Review
 <pre>
 {
-    'inherits':     'post',
     'name':         'review',
+    'inherits':     'post',
     'title':        'Clever Pun',
     'subtitle': {
         'dataType':     'text',
@@ -84,8 +84,8 @@ Let's check out a real example, something you'd actually want to display on your
 ##### Example Review
 <pre>
 {
-    'inherits':     'review',
     'name':         'iphone-5',
+    'inherits':     'review',
     'title':        'Long in the Tooth',
     'subtitle':     'iPhone gets a bigger screen and 4G. **Is that enough?**',
     'date':         '9-15-2012',
@@ -118,8 +118,8 @@ Let's say you want a hero with 5 slides, each with a title, an image, and a seri
 {
     'name':             'slide-show',
     'slides': {
-        'dataType':         'hotzone',
-        'list':             true,
+        'dataType':         'collection',
+        'memberType':       'image-detail',
         'ordered':          true
     }
 {
@@ -148,28 +148,39 @@ Let's say you want a hero with 5 slides, each with a title, an image, and a seri
     'image':            '/images/iphone-5-front.png',
     'hotzones': [
         'home-button': {
-            'x': ['.45', '.55'],
-            'y': ['.8', '.9']
+            'topLeft': ['.45', '.55'],
+            'bottomRight': ['.8', '.9']
         },
         'volume-rocker': {
-            'x': ['.1', '.15'],
-            'y': ['.2', '.35']
+            'topLeft': ['.1', '.15'],
+            'bottomRight': ['.2', '.35']
         }
     ],
     'subtitle':         'Front'
 }
 
 {
+    'name':             'hotzone',
+    'inherits':         'post',
+    'topLeft': {
+        'dataType':         'coordinates',
+    },
+    'bottomRigth': {
+        dataType':          'coordinates',
+    }
+
+{
+    'name':             'home-button',
     'inherits':         'hotzone',
     'parent':           'hero/iphone-5/front',
-    'name':             'home-button',
     'title':            'Home Button',
     'content':          'Exactly the same as the 4S'
 }
 
 {
-    'inherits':         'hero/iphone-5/front/home-button',
     'name':             'volume-rocker',
+    'inherits':         'hotzone',
+    'parent':           'hero/iphone-5/front',
     'title':            'Volume Rocker',
     'content':          'Still best-in-class'
 }
