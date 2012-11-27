@@ -11,24 +11,25 @@ Generic, simple CMS for Node.js
 
 ````
 {
-    'name': {
+    
+    'name': { // Combined with 'namespace', provides a unique identifier
         'type':         'slug'
     },
-    'slug': {
+    'slug': { // Defaults to 'name', lets you change the URL arbitrarily
         'type':         'slug',
-        'value':        '!this.name'
+        'value':        '&name' // A value starting with & refers to another property
     },
-    'inherits': {
-        'type':         'card',
-        'value':        '!this.parent'
+    'prototype': { // Card this iherits all properties from, including 'value' if not set
+        'prototype':    'card',
+        'value':        '&parent'
     },
-    'parent': {
+    'parent': { // Shorthand for setting prototype and namespace
         'type':         'card',
         'value':        ''
     },
-    'namespace': {
+    'namespace': { // Allows for multiple cards to have the same name
         'type':         'card',
-        'value':        '!this.parent'
+        'value':        '&parent'
     }
 }
 
