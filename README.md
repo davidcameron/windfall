@@ -36,7 +36,7 @@ The basic unit in Windfall is a ``card``. A card represents both a content unit,
     },
     'tags':     {
         'dataType':     'text',
-        'delimiter':    ','
+        'array':        true
     },
     'content':  {
         'dataType':     'text'
@@ -68,7 +68,7 @@ Here ``post`` inherits ``card``, which only gives it the ``name`` and ``slug`` f
         'dataType:      'percent',
         'value':        '.75'
     },
-    'tags':         'technology,devices',
+    'tags':         ['technology', 'devices'],
     content':       '## Specs
                     Lorum ipsum
                     ## Look and Feel
@@ -89,7 +89,7 @@ Let's check out a real example, something you'd actually want to display on your
     'title':        'Long in the Tooth',
     'subtitle':     'iPhone gets a bigger screen and 4G. **Is that enough?**',
     'date':         '9-15-2012',
-    'tags':         'apple,iphone5,iphone,phone',
+    'tags':         ['apple', 'iphone5, 'iphone, 'phone'],
     'score':        '.7',
     'content':      'We've had some time with the latest and greatest from Cupertino. It\'s better than the 4S, 
                     but can\'t quite match the competion.'
@@ -105,3 +105,46 @@ All the inheritance also gives us a default URL structure. Let's check it out.
 The URL for our iPhone 5 review: ``/blog/review/iphone-5``
 
 The URL gets constructed by hopping up the inheritance chain, prepending the 'name' attribute of each parent unless a 'slug' is defined (this makes the URL root ``/blog`` instead of ``/post``). You can actually have more than one post with the name "iphone-5", as long as they each have a unique direct parent. E.g. if you wanted a page that just listed all the iPhone 5 specs, it could inherit your ``spec-list`` card and still have the ``iphone-5`` name, getting ``/spec-list/iphone-5`` as the URL.
+
+#### Complex Data Structure
+
+I know what you're thinking: this is super cool, but not really compelling enough to switch from Wordpress. While that is false, the real hook is are the nested data structures.
+
+##### Hero Slide Example
+
+Let's say you want a hero with 5 slides, each with a title, an image, and a series of "hotzones" over the image that popover some text when hovered. Trust me, this is a pain in Wordpress, but crazy easy in Windfall.
+
+````
+{
+    'inherits':         'image-detail/iphone-5',
+    'parent':           'hero/iphone-5',
+    'name':             'front',
+    'image':            '/images/iphone-5-front.png',
+    'hotzones': {
+        'home-button': {
+            'x': ['.45', '.55'],
+            'y': ['.8', '.9']
+        },
+        'volume-rocker': {
+            'x': ['.1', '.15'],
+            'y': ['.2', '.35']
+        }
+    }
+    'subtitle':         'Front'
+}
+
+{
+    'inherits':         'hotzone',
+    'parent':           'hero/iphone-5/front',
+    'name':             'home-button',
+    'title':            'Home Button',
+    'content':          'Exactly the same as the 4S'
+}
+
+{
+    'inherits':         'hero/iphone-5/front/home-button',
+    'name':             'volume-rocker',
+    'title':            'Volume Rocker',
+    'content':          'Still best-in-class'
+}
+````
