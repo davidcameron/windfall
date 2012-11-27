@@ -5,6 +5,33 @@ Generic, simple CMS for Node.js
 
 ========
 
+## Brainstorm
+
+### Card
+
+````
+{
+    'name': {
+        'type':         'slug'
+    },
+    'slug': {
+        'type':         'slug',
+        'value':        '!this.name'
+    },
+    'inherits': {
+        'type':         'card',
+        'value':        '!this.parent'
+    },
+    'parent': {
+        'type':         'card',
+        'value':        ''
+    },
+    'namespace': {
+        'type':         'card',
+        'value':        '!this.parent'
+    }
+}
+
 ## Use Case
 
 You need **posts** and **pages**, but also **products**, or **portfolio examples**. More importantly, you're looking for content type *inheritance*.
