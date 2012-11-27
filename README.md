@@ -36,7 +36,7 @@ The basic unit in Windfall is a ``card``. A card represents both a content unit,
     },
     'tags':     {
         'dataType':     'text',
-        'array':        true
+        'list':         true
     },
     'content':  {
         'dataType':     'text'
@@ -116,11 +116,37 @@ Let's say you want a hero with 5 slides, each with a title, an image, and a seri
 
 ````
 {
-    'inherits':         'image-detail/iphone-5',
-    'parent':           'hero/iphone-5',
-    'name':             'front',
-    'image':            '/images/iphone-5-front.png',
+    'name':             'slide-show',
+    'slides': {
+        'dataType':         'hotzone',
+        'list':             true,
+        'ordered':          true
+    }
+{
+    'name':             'iphone-5'
+    'inherits':         'slide-show',
+    'title':            'Anatomy of iPhone 5',
+    'slides':           ['front', 'back', 'top', 'bottom', 'side'],
+    'loop':             false
+}
+
+{
+    'name':             'image-detail',
+    'image': {
+        'dataType':         'url',
+        'value':            '/images/missing.png'
+    }
     'hotzones': {
+        'dataType':         'hotzone'
+    }
+        
+
+{
+    'name':             'front',
+    'inherits':         'image-detail',
+    'parent':           'slide-show/iphone-5',
+    'image':            '/images/iphone-5-front.png',
+    'hotzones': [
         'home-button': {
             'x': ['.45', '.55'],
             'y': ['.8', '.9']
@@ -129,7 +155,7 @@ Let's say you want a hero with 5 slides, each with a title, an image, and a seri
             'x': ['.1', '.15'],
             'y': ['.2', '.35']
         }
-    }
+    ],
     'subtitle':         'Front'
 }
 
@@ -148,3 +174,34 @@ Let's say you want a hero with 5 slides, each with a title, an image, and a seri
     'content':          'Still best-in-class'
 }
 ````
+
+OK that was a lot of stuff, but we accomplished a lot, too. Let's take a look at the ``front`` card once it pulls in its hotzones:
+
+````
+
+{
+    'name':             'front',
+    'inherits':         'image-detail',
+    'parent':           'slide-show/iphone-5',
+    'image':            '/images/iphone-5-front.png',
+    'hotzones': [
+        'home-button': {
+            'title':            'Home Button',
+            'content':          'Exactly the same as the 4S',
+            'x': ['.45', '.55'],
+            'y': ['.8', '.9']
+        },
+        'volume-rocker': {
+            'title':            'Volume Rocker',
+            'content':          'Still best-in-class',
+            'x': ['.1', '.15'],
+            'y': ['.2', '.35']
+        }
+    ],
+    'subtitle':         'Front'
+}
+````
+
+Why not just include the hotzone title and content right in the ``front`` slide? Because we might want to re-use those, e.g. as a list of specs, but the x and y coordinates are necessarily a relation of the slide to the hotzones.
+
+One of the coolest things here is the ``ordered`` attribute. In your content editor, non-ordered lists of content like tags will just let you add, edit, and remove items. With ``ordered`` applied, you can easily give your editor the ability to move items around relative to each other. The best part is that we're not relying on some ordinal number property of the slides: MongoDB can store data natively as arrays, so we can push and shift and pop and splice to our hearts content.
