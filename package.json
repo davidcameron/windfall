@@ -1,0 +1,26 @@
+{
+  "name": "windfall",
+  "version": "0.0.0",
+  "description": "A MongoDB based CMS with prototypal inheritance of content types.",
+  "main": "app.js",
+  "dependencies": {
+    "mongoose": "~3.4.0",
+    "socket.io": "~0.9.11"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/davidcameron/windfall.git"
+  },
+  "keywords": [
+    "cms",
+    "mongodb",
+    "blog"
+  ],
+  "author": "David Cameron",
+  "license": "BSD",
+  "readmeFilename": "README.md"
+}
