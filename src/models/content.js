@@ -1,25 +1,28 @@
 
-    var mongoose = require('mongoose');
+    var mongo = require('mongoskin');
     var Q = require("q");
 
-    var db = mongoose.createConnection('localhost', 'gw2tips');
+    var db = mongo.db('localhost/windfall', {safe: false});
+    db.collection('unit').ensureIndex([['fullName', 1]], true);
+    db.bind('unit');
 
-    var content = {
+    var Unit = {
         name: {
-            type:   text
+            type:   'text',
+            value:  'root'
         },
         slug: {
-            type:   text
+            type:   'text'
         },
-        prototype: {
-            type:   card,
-            value:  content
+        archetype: {
+            type:   'unit',
+            value:  'root'
         },
         parent: {
-            type:   card
+            type:   'unit'
         },
         namespace: {
-            type:   text
+            type:   'text'
         }
     };
 
@@ -40,8 +43,21 @@
     var typeMap = {
         text: String,
         slug: String,
-        card: String
+        unit: String
     };
+
+    // Creates the full name (unique ID) of the unit
+    // Does a few lookups in order
+    function fullName (unit) {
+        var namePrefix =
+            unit.namespace  ||
+            unit.parent     ||
+            '';
+        if (namePrefix.length > 0) {
+            namePrefix += '/';
+        }
+        return namePrefix + unit.name;
+    }
 
     function TypeTester () {}
 
@@ -50,47 +66,121 @@
         return patt.test(slug);
     };
 
-    TypeTester.prototype.card = function (name) {
-        // return db.find(name);
-        return true;
+    TypeTester.prototype.unit = function (name) {
+        return db.find(name);
     };
 
     TypeTester.prototype.text = function (text) {
-        // return db.find(name);
         return true;
     };
 
-    function insert (card) {
-        var typeTest = new TypeTester();
+    function validate (unit) {
+        var valid = Q.defer();
 
-        for(var field in card) {
-            var test = card[field].type;
-            
-            if(!typeTest[test](card[field].value)) {
-                // throw error
-                return false;
-            }
-        }
-        // do insert
-        return true;
-    }
+        (function () {
+            inherit(unit).then(function (tempUnit) {
+                for (var field in tempUnit) {
 
-    function extend (card) {
-        if (card.hasOwnProperty('prototype')) {
-            var prototype = find(card.prototype);
-            for (var field in prototype) {
-                if(card.hasOwnProperty('field')) {
-                    card[field].type = prototype[field].type;
-                } else {
-                    card.field = prototype.field;
+                    // Make sure each field has a type
+                    var type = tempUnit[field].type;
+                    if (typeof type === 'undefined') {
+                        valid.reject(new Error('Field "' + field + '" doesn\'t have a type'));
+                    }
+
+                    // Make sure type exists
+                    var test = typeTest[type];
+                    if (typeof test === 'undefined') {
+                        valid.reject(new Error('Type "' + type + '" doesn\'t exist'));
+                    }
+
+                    // Make sure value passes test
+                    if (test(tempUnit[field].value)) {
+                        valid.reject(new Error('Test failed for: ' + field));
+                    }
                 }
+                valid.resolve(unit);
+
+            });
+        })();
+
+        return valid.promise;
+    }
+
+    // Needs to be made recusive so it can use promises
+    function inherit (unit) {
+        var deferred = Q.defer();
+        console.log(unit);
+        if (unit.name.value === 'root') {
+            deferred.resolve(unit);
+        } else {
+            console.log('not root');
+
+            if (!unit.hasOwnProperty('archetype')) {
+                unit.archetype = 'root';
             }
+
+            (function () {
+                find(unit.archetype).then(function (error, result) {
+                    console.log('find then');
+                    var archetype = result[0];
+
+                    for (var field in archetype) {
+                        if(unit.hasOwnProperty('field') && typeof unit.field.type === 'undefined') {
+                            unit[field].type = archetype[field].type;
+                        } else {
+                            unit[field] = archetype[field];
+                        }
+                    }
+                    inherit(unit);
+                });
+            })();
         }
+        
+        return deferred.promise;
     }
 
-    function find (name) {
-        return card;
+    // To work with promises, find takes a failOnFind argument
+    // failOnFind pairs 'resolve' and 'reject' to finding or not finding
+    function find(unit, failOnFind) {
+        var defer = Q.defer();
+        var promiseSuccess  = failOnFind ? 'reject' : 'resolve';
+        var promiseFail = failOnFind ? 'resolve' : 'reject';
+
+        if(!unit.isString);
+        var unitName = fullName(unit);
+
+        console.log(unitName);
+
+        (function () {
+
+            db.unit.find({'fullName': unitName}).toArray(function (error, response) {
+                if (response.length === 0 || error) {
+                    defer[promiseFail](unit);
+                } else {
+                    defer[promiseSuccess](response);
+                }
+            });
+            
+        })();
+
+        return defer.promise;
     }
 
-    console.log(exampleContent.slug.value + ": " + insert(exampleContent));
-    console.log(failContent.slug.value + ": " + insert(failContent));
+    function insert (unit) {
+        db.unit.insert(unit);
+    }
+
+    function create (unit) {
+        find(unit, true)
+            .then(validate)
+            .then(function (unit) {console.log(unit);});
+            //.then(insert, error);
+    }
+
+    create({
+        name:'testunit',
+        title: {
+            type: 'test',
+            value: 'Test Unit'
+        }
+    });
