@@ -43,8 +43,10 @@ function find(record) {
 // Inherits defaults and structure up the chain recursively
 // Adds inherited structure in inherited : {structure: {}}
 function populate (record, defer) {
+
     // Setup in the first populate call
     if (typeof defer === 'undefined') {
+
         defer = Q.defer();
         record.inherited = {};
         record.inherited.structure = {};
@@ -121,8 +123,20 @@ var validPost =
     name: 'new-test-post',
     archetype: 'post',
     data: {
-        title: 'Hello World2',
+        title: 'Hello World!!',
         body: '<p>Hello, this is my first post!</p>'
+    }
+};
+
+var betterPost =
+{
+    name: 'better-post',
+    archetype: 'post',
+    data: {
+        title: 'Windfall Has Landed',
+        subtitle: 'A CMS With Prototypal Inheritance',
+        author: 'David Cameron',
+        body: 'Windfall allows for arbitrarily complex content. Treat posts, articles, slideshows, and tooltips the same way, and edit with the same interface.'
     }
 };
 
@@ -140,17 +154,13 @@ function create (record) {
     .then(function () {
         return populate(record);
     })
-    .then(function (r) {
-        console.log(r);
-    })
-    //.then(insert)
+    .then(insert)
     .fail(function (error) {
-        console.log('fail', error);
+        console.log(error);
     });
 }
 
 function createFields (record) {
-    console.log(record);
     fieldJson = {};
 
     for (var y in record.inherited.structure) {
@@ -178,8 +188,6 @@ function fieldsFor (record) {
     return defer.promise;
 }
 
-find('post')
-.then(fieldsFor)
-.then(function (r) {
-    console.log(r);
-});
+module.exports.find = find;
+module.exports.populate = populate;
+module.exports.fieldsFor = fieldsFor;
