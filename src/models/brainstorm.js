@@ -16,25 +16,27 @@ var inputMap =
 
 
 // Promise wrapper for Mongo find
-function find(record) {
-    if (typeof record.name === 'undefined') {
-        recordName = record;
-    } else {
-        recordName = record.name;
+function find (query) {
+    console.log('find', typeof query);
+    if (typeof query === 'string') {
+        console.log('stringy');
+        query = {name: query}; // Lets you just pass find the name
+        console.log(query);
     }
+
     var defer = Q.defer();
     
-    (function (defer, recordName) {
+    (function (defer, query) {
 
-        db.record.find({'name': recordName}).toArray(function (error, response) {
+        db.record.find(query).toArray(function (error, response) {
             if (response.length === 0 || error) {
                 defer.reject();
             } else {
-                defer.resolve(response[0]);
+                defer.resolve(response);
             }
         });
 
-    })(defer, recordName);
+    })(defer, query);
 
     return defer.promise;
 }
