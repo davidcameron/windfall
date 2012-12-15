@@ -1,7 +1,7 @@
 var app = require('express')();
 var server = require('http').createServer(app);
-var serveStatic = require('./routers/static');
+var dispatch = require('./routers/dispatch');
 
 server.listen(8080);
 
-app.get('*', serveStatic);
+app.get('*', dispatch);
