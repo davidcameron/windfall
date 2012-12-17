@@ -23,7 +23,7 @@ function find (query) {
         query = {name: query}; // Lets you just pass find the name
         console.log(query);
     }
-
+    
     var defer = Q.defer();
     
     (function (defer, query) {
