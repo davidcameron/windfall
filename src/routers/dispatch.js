@@ -22,7 +22,10 @@ function serveTemplate (req, res) {
     .then(function (record) {
         res.writeHead(200, {'Content-Type': 'text/html'});
 
-        var content = mu.compileAndRender('./public/index.html', record.data);
+        var data = record[0].data;
+        console.log(data.title);
+
+        var content = mu.compileAndRender('./public/index.html', data);
         util.pump(content, res);
         
     });

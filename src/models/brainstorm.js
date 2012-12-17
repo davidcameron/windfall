@@ -17,11 +17,8 @@ var inputMap =
 
 // Promise wrapper for Mongo find
 function find (query) {
-    console.log('find', typeof query);
     if (typeof query === 'string') {
-        console.log('stringy');
         query = {name: query}; // Lets you just pass find the name
-        console.log(query);
     }
     
     var defer = Q.defer();
@@ -158,7 +155,6 @@ function create (record) {
     })
     .then(insert)
     .fail(function (error) {
-        console.log(error);
     });
 }
 
