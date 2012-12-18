@@ -17,17 +17,20 @@ function dispatch (req, res) {
 function serveTemplate (req, res) {
     mu.clearCache();
 
-    content.find('better-post')
+    content.find({archetype: 'post'})
     .then(content.populate)
-    .then(function (record) {
-        res.writeHead(200, {'Content-Type': 'text/html'});
-
-        var data = record[0].data;
-        console.log(data.title);
-
-        var content = mu.compileAndRender('./public/index.html', data);
-        util.pump(content, res);
+    .then(function (records) {
+        var templateData = {};
+        templateData.records = [];
         
+        var recordsLength = records.length;
+        for(var i = 0; i < recordsLength; i++) {
+            templateData.records.push(records[i].data);
+        }
+
+        templateData.test = "Test!";
+        console.log(templateData);
+        res.render('index', templateData);
     });
 }
 
