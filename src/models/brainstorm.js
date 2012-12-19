@@ -139,28 +139,46 @@ var betterPost =
 };
 
 function populateChildren (record, childrenKey) {
-    record = record[0];
+    record = record[0].data;
     var defer = Q.defer();
     promiseList = [];
-    var children = record[childrenKey];
+    var children = record[childrenKey].members;
 
     for(var index in children) {
-        var promise = find(children[index]);
+        var promise = find(children[index].name);
         promiseList.push(promise);
     }
     Q.allResolved(promiseList).then(function (children) {
+        console.log(children);
         if(typeof record.children === 'undefined') {
             record.children = {};
         }
-
         record.children[childrenKey] = {};
         var childBucket = record.children[childrenKey];
+        var override = record[childrenKey].override;
 
         for (var index in children) {
             var child = children[index];
             var childData = child.valueOf()[0];
+            
             if(typeof childData !== "undefined") {
+
+                // Deal with default override for all children
+                for(var overrideKey in override) {
+                    childData.data[overrideKey] = override[overrideKey];
+                }
+
+                // Override for specific child
+                if (record[childrenKey].members[index].override) {
+                    var specificOverride = record[childrenKey].members[index].override;
+
+                    for (var specificOverrideKey in specificOverride) {
+                        childData.data[specificOverrideKey] = specificOverride[specificOverrideKey];
+                    }
+                }
+                
                 childBucket[childData.name] = childData;
+                console.log(childData);
             }
         }
         defer.resolve(record);
@@ -225,6 +243,60 @@ find('major-arcana')
     .then(populate)
     .then(function (record) {
         populateChildren(record, 'cards');
+    })
+    .fail(function (error) {
+        console.log(error);
+    });
+
+var suit = {
+    "name" : "major-arcana",
+    "archetype" : "root",
+    data: {
+        content: {
+            title: "Major Arcana",
+            body: "The Major Arcana or trumps are a suit of twenty-two cards in the Tarot deck. They serve as a permanent trump suit in games played with the Tarot deck, and are distinguished from the four standard suits collectively known as the Minor Arcana. The terms \"Major\" and \"Minor Arcana\" are used in the occult and divinatory applications of the deck, and originate with Paul Christian."
+        },
+        cards : {
+            members: [
+                {
+                    name: "the-fool",
+                    override: {
+                        suit: "Fool in Major Acana"
+                    }
+                },
+                {name: "the-magician"},
+                {name: "the-high-priestess"},
+                {name: "the-empress"},
+                {name: "the-emperor"},
+                {name: "the-hierophant"},
+                {name: "the-lovers"},
+                {name: "the-chariot"},
+                {name: "strenght"},
+                {name: "the-hermit"},
+                {name: "wheel-of-fortune"},
+                {name: "justice"},
+                {name: "the-hanged-man"},
+                {name: "death"},
+                {name: "temperance"},
+                {name: "the-devil"},
+                {name: "the-tower"},
+                {name: "the-star"}
+            ],
+            override: {
+                suit: "the-major-arcana"
+            }
+        }
+    }
+};
+
+create(suit)
+    .then(function () {
+        find({name: 'major-arcana'});
+    })
+    .then(function (record) {
+        populateChildren(record, 'cards');})
+    .then(function (record) {
+        console.log(record);
     })
     .fail(function (error) {
         console.log(error);
