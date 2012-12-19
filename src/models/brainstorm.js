@@ -143,26 +143,26 @@ function populateChildren (record, childrenKey) {
     var defer = Q.defer();
     promiseList = [];
     var children = record[childrenKey];
-    console.log(record);
 
     for(var index in children) {
-        var promise = find();
-        console.log("name:", children[index]);
+        var promise = find(children[index]);
         promiseList.push(promise);
     }
-
-    Q.all(promiseList).then(function (children) {
-        console.log("children", children);
+    Q.allResolved(promiseList).then(function (children) {
         if(typeof record.children === 'undefined') {
             record.children = {};
         }
 
         record.children[childrenKey] = {};
         var childBucket = record.children[childrenKey];
-        for (var child in children) {
-            childBucket[child.name] = child;
-        }
 
+        for (var index in children) {
+            var child = children[index];
+            var childData = child.valueOf()[0];
+            if(typeof childData !== "undefined") {
+                childBucket[childData.name] = childData;
+            }
+        }
         defer.resolve(record);
     });
 }
