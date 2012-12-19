@@ -42,7 +42,6 @@ function find (query) {
 // Inherits defaults and structure up the chain recursively
 // Adds inherited structure in inherited : {structure: {}}
 function populate (record, defer) {
-
     // Setup in the first populate call
     if (typeof defer === 'undefined') {
 
@@ -139,13 +138,43 @@ var betterPost =
     }
 };
 
-function create (record) {
+function populateChildren (record, childrenKey) {
+    record = record[0];
+    var defer = Q.defer();
+    promiseList = [];
+    var children = record[childrenKey];
+    console.log(record);
 
+    for(var index in children) {
+        var promise = find();
+        console.log("name:", children[index]);
+        promiseList.push(promise);
+    }
+
+    Q.all(promiseList).then(function (children) {
+        console.log("children", children);
+        if(typeof record.children === 'undefined') {
+            record.children = {};
+        }
+
+        record.children[childrenKey] = {};
+        var childBucket = record.children[childrenKey];
+        for (var child in children) {
+            childBucket[child.name] = child;
+        }
+
+        defer.resolve(record);
+    });
+}
+
+function create (record) {
+    var defer = Q.defer();
     find(record)
     //  First function gets called on success, second on fail
     //  Throwing an error in the first function sets up the error pipe
     //  And returning w/o throwing keeps going on the success pipe
     .then(function () {
+
         throw new Error("Already exists!");
     }, function () {
         return "OK";
@@ -154,8 +183,14 @@ function create (record) {
         return populate(record);
     })
     .then(insert)
+    .then(function () {
+        defer.resolve();
+    })
     .fail(function (error) {
+        defer.resolve();
     });
+
+    return defer.promise;
 }
 
 function createFields (record) {
@@ -185,6 +220,16 @@ function fieldsFor (record) {
 
     return defer.promise;
 }
+
+find('major-arcana')
+    .then(populate)
+    .then(function (record) {
+        populateChildren(record, 'cards');
+    })
+    .fail(function (error) {
+        console.log(error);
+    });
+
 
 module.exports.find = find;
 module.exports.populate = populate;

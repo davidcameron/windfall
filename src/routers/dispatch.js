@@ -15,9 +15,8 @@ function dispatch (req, res) {
 }
 
 function serveTemplate (req, res) {
-    mu.clearCache();
 
-    content.find({archetype: 'post'})
+    content.find({archetype: 'card'})
     .then(content.populate)
     .then(function (records) {
         var templateData = {};

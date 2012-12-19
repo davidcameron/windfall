@@ -73,11 +73,7 @@
             <!-- Main hero unit for a primary marketing message or call to action -->
             {% for record in records %}
             <div class="hero-unit">
-                <h1>{{record.title}} <small>by {{record.author}}</small></h1>
-                {% autoescape false %}
-                <p>{{record.body}}</p>
-                {% endautoescape %}
-                <p><a class="btn btn-primary btn-large">Read more &raquo;</a></p>
+                <h1>{{record.niceName}} <small>in {{record.suit}}</small></h1>
             </div>
             {% endfor %}
             <hr>
