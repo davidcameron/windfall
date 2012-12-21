@@ -65,7 +65,7 @@ function populate (record, defer) {
                 record = inherit(record, newRecord);
                 // No record w/ the name of the archetype
                 if (!record) {
-                    defer.reject('Faild Inherit');
+                    defer.reject('Failed Inherit');
                     return;
                 }
                 return (function (defer) {
@@ -116,51 +116,48 @@ function insert (record) {
     return defer.promise;
 }
 
-var validPost =
-{
-    name: 'new-test-post',
-    archetype: 'post',
-    data: {
-        title: 'Hello World!!',
-        body: '<p>Hello, this is my first post!</p>'
-    }
-};
-
-var betterPost =
-{
-    name: 'better-post',
-    archetype: 'post',
-    data: {
-        title: 'Windfall Has Landed',
-        subtitle: 'A CMS With Prototypal Inheritance',
-        author: 'David Cameron',
-        body: 'Windfall allows for arbitrarily complex content. Treat posts, articles, slideshows, and tooltips the same way, and edit with the same interface.'
-    }
-};
-
+// Adds child records to a parent record
+// Whole thing gets returned and looks like one record
 function populateChildren (record, childrenKey) {
-    record = record[0].data;
+    record = record[0].data; // Need to make find not return array when find by name
     var defer = Q.defer();
+
+    // Going to run find once for each child
+    // Each function call returns a promise
     promiseList = [];
+
     var children = record[childrenKey].members;
 
     for(var index in children) {
         var promise = find(children[index].name);
         promiseList.push(promise);
     }
+
     Q.allResolved(promiseList).then(function (children) {
-        console.log(children);
+
         if(typeof record.children === 'undefined') {
             record.children = {};
         }
+
+        // Add a 'children' subdoc to record
+
         record.children[childrenKey] = {};
+
+        // Has its own subdoc, the same as the original key
         var childBucket = record.children[childrenKey];
+
+        // This is the Override All object
+        // Overrides every child
         var override = record[childrenKey].override;
 
+        // Children here are promises, either resolved or rejected
         for (var index in children) {
             var child = children[index];
+
+            // This gets us the resolved promise value
             var childData = child.valueOf()[0];
             
+            // Filter out rejected promises (not found)
             if(typeof childData !== "undefined") {
 
                 // Deal with default override for all children
@@ -178,7 +175,6 @@ function populateChildren (record, childrenKey) {
                 }
                 
                 childBucket[childData.name] = childData;
-                console.log(childData);
             }
         }
         defer.resolve(record);
