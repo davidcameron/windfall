@@ -295,7 +295,7 @@ var post =
 
 var review =
 {
-    name: 'post',
+    name: 'review',
     data: {
         title: 'This is a Title',
         body: 'This is a post',
@@ -339,7 +339,8 @@ var review =
             'slug',
             'author',
             'excerpt',
-            'body'
+            'body',
+            'score'
         ]
     }
 };

@@ -16,7 +16,7 @@ function dispatch (req, res) {
 
 function serveTemplate (req, res) {
 
-    content.find({name: 'post'})
+    content.find({name: 'review'})
     .then(content.createFields)
     .then(function (json) {
         var data = {};
