@@ -5,10 +5,11 @@ var db = mongo.db('localhost/windfall', {safe: false});
 db.collection('record').ensureIndex([['name', 1]], true);
 db.bind('record');
 
+// Map data types with inputs for creating / editing records
 var inputMap =
 {
     'Text': 'text',
-    'HTML': 'textarea',
+    'Markdown': 'textarea',
     'Boolean': 'checkbox',
     'Author': 'text',
     'Slug': 'text'
@@ -54,7 +55,6 @@ function populate (record, defer) {
             record.structure = {};
         }
     }
-
     if (typeof record.inherited.archetype === 'undefined') {
         // Inheritance chain ends when there's no archetype
         defer.resolve(record);
@@ -70,7 +70,7 @@ function populate (record, defer) {
                 }
                 return (function (defer) {
                     // recurse
-                    populate (record, defer);
+                    populate(record, defer);
                 })(defer);
             });
         })(defer, record);
@@ -183,7 +183,7 @@ function populateChildren (record, childrenKey) {
 
 function create (record) {
     var defer = Q.defer();
-    find(record)
+    find(record.name)
     //  First function gets called on success, second on fail
     //  Throwing an error in the first function sets up the error pipe
     //  And returning w/o throwing keeps going on the success pipe
@@ -208,16 +208,28 @@ function create (record) {
 }
 
 function createFields (record) {
-    fieldJson = {};
+    record = record[0];
+    var fields = [];
 
-    for (var y in record.inherited.structure) {
-        fieldJson[y] = inputMap[record.inherited.structure[y].type];
+    var order = record.structure._order;
+    var length = order.length;
+
+    var structure = record.structure;
+    var key = "";
+
+    for (var i = 0; i < length; i++) {
+        key = order[i];
+        var field = {};
+        field.type = inputMap[structure[key].type];
+        field.label = structure[key].label;
+        field.name = key;
+
+        console.log(fields);
+
+        fields.push(field);
     }
 
-    for (var x in record.structure) {
-        fieldJson[x] = inputMap[record.structure[x].type];
-    }
-    return JSON.stringify(fieldJson);
+    return JSON.stringify(fields);
 }
 
 function fieldsFor (record) {
@@ -235,70 +247,106 @@ function fieldsFor (record) {
     return defer.promise;
 }
 
-find('major-arcana')
-    .then(populate)
-    .then(function (record) {
-        populateChildren(record, 'cards');
-    })
-    .fail(function (error) {
-        console.log(error);
-    });
-
-var suit = {
-    "name" : "major-arcana",
-    "archetype" : "root",
+var post =
+{
+    name: 'post',
     data: {
-        content: {
-            title: "Major Arcana",
-            body: "The Major Arcana or trumps are a suit of twenty-two cards in the Tarot deck. They serve as a permanent trump suit in games played with the Tarot deck, and are distinguished from the four standard suits collectively known as the Minor Arcana. The terms \"Major\" and \"Minor Arcana\" are used in the occult and divinatory applications of the deck, and originate with Paul Christian."
+        title: 'This is a Title',
+        body: 'This is a post',
+        author: 'John Doe'
+    },
+    structure: {
+        title: {
+            type: 'Text',
+            required: true,
+            label: 'Title'
         },
-        cards : {
-            members: [
-                {
-                    name: "the-fool",
-                    override: {
-                        suit: "Fool in Major Acana"
-                    }
-                },
-                {name: "the-magician"},
-                {name: "the-high-priestess"},
-                {name: "the-empress"},
-                {name: "the-emperor"},
-                {name: "the-hierophant"},
-                {name: "the-lovers"},
-                {name: "the-chariot"},
-                {name: "strenght"},
-                {name: "the-hermit"},
-                {name: "wheel-of-fortune"},
-                {name: "justice"},
-                {name: "the-hanged-man"},
-                {name: "death"},
-                {name: "temperance"},
-                {name: "the-devil"},
-                {name: "the-tower"},
-                {name: "the-star"}
-            ],
-            override: {
-                suit: "the-major-arcana"
-            }
-        }
+        subtitle: {
+            type: 'Text',
+            label: 'Subtitle'
+        },
+        slug: {
+            type: 'Slug',
+            label: 'URL Slug'
+        },
+        author: {
+            type: 'Author',
+            label: 'Author (First Last)'
+        },
+        excerpt: {
+            type: 'Text',
+            label: 'Excerpt'
+        },
+        body: {
+            type: 'Markdown',
+            label: 'Content Body',
+            required: true
+        },
+        _order: [
+            'title',
+            'subtitle',
+            'slug',
+            'author',
+            'excerpt',
+            'body'
+        ]
     }
 };
 
-create(suit)
-    .then(function () {
-        find({name: 'major-arcana'});
-    })
-    .then(function (record) {
-        populateChildren(record, 'cards');})
-    .then(function (record) {
-        console.log(record);
-    })
-    .fail(function (error) {
-        console.log(error);
-    });
+var review =
+{
+    name: 'post',
+    data: {
+        title: 'This is a Title',
+        body: 'This is a post',
+        author: 'John Doe'
+    },
+    structure: {
+        title: {
+            type: 'Text',
+            required: true,
+            label: 'Title'
+        },
+        subtitle: {
+            type: 'Text',
+            label: 'Subtitle'
+        },
+        slug: {
+            type: 'Slug',
+            label: 'URL Slug'
+        },
+        author: {
+            type: 'Author',
+            label: 'Author (First Last)'
+        },
+        excerpt: {
+            type: 'Text',
+            label: 'Excerpt'
+        },
+        body: {
+            type: 'Markdown',
+            label: 'Content Body',
+            required: true
+        },
+        score: {
+            type: 'String',
+            label: 'Review Score',
+            required: true
+        },
+        _order: [
+            'title',
+            'subtitle',
+            'slug',
+            'author',
+            'excerpt',
+            'body'
+        ]
+    }
+};
 
+create(review);
 
 module.exports.find = find;
+module.exports.createFields = createFields;
 module.exports.populate = populate;
 module.exports.fieldsFor = fieldsFor;

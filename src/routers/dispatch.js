@@ -16,20 +16,14 @@ function dispatch (req, res) {
 
 function serveTemplate (req, res) {
 
-    content.find({archetype: 'card'})
-    .then(content.populate)
-    .then(function (records) {
-        var templateData = {};
-        templateData.records = [];
-        
-        var recordsLength = records.length;
-        for(var i = 0; i < recordsLength; i++) {
-            templateData.records.push(records[i].data);
-        }
-
-        templateData.test = "Test!";
-        console.log(templateData);
-        res.render('index', templateData);
+    content.find({name: 'post'})
+    .then(content.createFields)
+    .then(function (json) {
+        var data = {};
+        console.log(json);
+        data.fields = JSON.parse(json);
+        console.log(data);
+        res.render('new', data);
     });
 }
 
