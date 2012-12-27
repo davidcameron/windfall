@@ -1,4 +1,4 @@
-
+    console.log('content');
     var mongo = require('mongoskin');
     var Q = require("q");
 
@@ -141,7 +141,8 @@
 
     // To work with promises, find takes a failOnFind argument
     // failOnFind pairs 'resolve' and 'reject' to finding or not finding
-    function find(unit, failOnFind) {
+    function find (unit, failOnFind) {
+        console.log('find');
         var defer = Q.defer();
         var promiseSuccess  = failOnFind ? 'reject' : 'resolve';
         var promiseFail = failOnFind ? 'resolve' : 'reject';

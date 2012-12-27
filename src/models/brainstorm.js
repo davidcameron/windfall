@@ -27,6 +27,7 @@ function find (query) {
     (function (defer, query) {
 
         db.record.find(query).toArray(function (error, response) {
+
             if (response.length === 0 || error) {
                 defer.reject();
             } else {
@@ -224,8 +225,6 @@ function createFields (record) {
         field.label = structure[key].label;
         field.name = key;
 
-        console.log(fields);
-
         fields.push(field);
     }
 
@@ -344,8 +343,6 @@ var review =
         ]
     }
 };
-
-create(review);
 
 module.exports.find = find;
 module.exports.createFields = createFields;
