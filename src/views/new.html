@@ -27,7 +27,11 @@
             }
         </style>
 
+        <script src="js/vendor/markdown.converter.js"></script>
+        <script src="js/vendor/markdown.editor.js"></script>
+
         <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+
     </head>
     <body>
         <!--[if lt IE 7]>
@@ -79,10 +83,16 @@
                         {% if field.type != 'textarea' %}
                         <input type="{{field.type}}" name="{{field.name}}" placeholder="{{field.name}}" rows="10">
                         {% else %}
-                        <textarea name="{{field.name}}" placeholder="{{field.name}}" rows="10" class="input-block-level"></textarea>
+                        <div class="row">
+                            <div class='container span4'>
+                                <textarea name="{{field.name}}" placeholder="{{field.name}}" rows="10" class="wmd-input span6" id="wmd-input"></textarea>
+                            </div>
+                            <div id="wmd-preview" class="wmd-panel wmd-preview span4"></div>
+                        </div>
+                        
                         {% endif %}
                         {% endfor %}
-                    </fieldset>
+                    </fieldset> 
                 </form>
                 <a href="#" class='btn btn-primary btn-large'>Go</a>
             </div>
@@ -107,6 +117,13 @@
             (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
             g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
             s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+        <script type="text/javascript">
+        $(function () {
+             var converter = new Markdown.Converter();
+             var editor = new Markdown.Editor(converter);
+             editor.run();
+         });
         </script>
     </body>
 </html>
