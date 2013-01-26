@@ -2,7 +2,7 @@ var fs = require('fs');
 var util = require('util');
 
 var content = require('../models/brainstorm.js');
-var mu = require('mu2');
+
 
 var crudURLs = ['create', 'read', 'update', 'destroy'];
 
