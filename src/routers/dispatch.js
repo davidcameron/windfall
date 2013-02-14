@@ -8,8 +8,9 @@ var crudURLs = ['create', 'read', 'update', 'destroy'];
 
 function dispatch (req, res) {
     var params = req.url.split('/');
+    console.log(params);
     var root = params[1];
-    if (root === 'css' || root === 'js' || root === 'favicon.ico') {
+    if (root === '' || root === 'css' || root === 'js' || root === 'favicon.ico') {
         serveStatic(req, res);
     } else if (crudURLs.indexOf(root) !== -1) {
         dispatchCRUD (params, req, res);
@@ -24,8 +25,8 @@ function dispatchCRUD (params, req, res) {
             serveCreate(params, req, res);
             break;
 
-        case crudURLs[1]: // create
-            serveRead(params, req, res);
+        case crudURLs[1]: // read
+            serveStatic(params, req, res);
             break;
 
         case crudURLs[2]: // create
@@ -55,7 +56,7 @@ function serveStatic (req, res) {
     switch (params[1]) {
 
         case '':
-            filePath = false;
+            filePath += '/index.html';
             break;
 
         case 'css':
@@ -73,6 +74,7 @@ function serveStatic (req, res) {
             contentType = "image/x-icon";
             break;
     }
+    console.log(filePath);
     fs.readFile(filePath, function (error, content) {
         if (error) {
             res.writeHead(501);
