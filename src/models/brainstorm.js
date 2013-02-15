@@ -295,6 +295,7 @@ var post =
 var review =
 {
     name: 'review',
+    archetype: 'post',
     data: {
         title: 'This is a Title',
         body: 'This is a post',
@@ -343,7 +344,7 @@ var review =
         ]
     }
 };
-
+create(review);
 module.exports.find = find;
 module.exports.createFields = createFields;
 module.exports.populate = populate;
