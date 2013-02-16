@@ -344,6 +344,18 @@ var review =
         ]
     }
 };
+
+var root =
+{
+    name: 'root',
+    structure: {
+        display: {
+            type: 'Boolean',
+            defaultValue: true
+        }
+    }
+};
+
 create(review);
 module.exports.find = find;
 module.exports.createFields = createFields;
